@@ -1,0 +1,63 @@
+/* Enhanced FAQ Styles - Iterations 3-10 Combined */
+
+/* Stronger question typography */
+.accordion-toggle p {
+  margin: 0;
+  color: var(--color-text-primary);
+  flex: 1;
+  transition: color 0.3s ease;
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+
+/* Checkmark for open state */
+.accordion-item[open] .accordion-toggle::before {
+  content: '✓';
+  background: linear-gradient(135deg, var(--color-success), #0d9488);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Divider between question and answer */
+.accordion-item[open] .accordion-toggle {
+  border-bottom: 1px solid rgba(129, 140, 248, 0.2);
+  padding-bottom: var(--space-l);
+}
+
+/* Missing closing bracket and rotation */
+.accordion-chevron {
+  color: var(--color-accent);
+  font-size: 20px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+[open] .accordion-chevron {
+  transform: rotate(180deg);
+  color: var(--color-success);
+}
+
+/* Better answer styling */
+.accordion-content {
+  padding: var(--space-l) var(--space-xl) var(--space-xl) var(--space-xl);
+  color: var(--color-text-secondary);
+  margin-left: 48px;
+  animation: slideDown 0.3s ease;
+}
+
+/* Number indicator for FAQ items */
+.accordion-toggle::after {
+  content: attr(data-index);
+  position: absolute;
+  right: 60px;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-weight: 600;
+  opacity: 0.5;
+}
+
+.accordion-item:hover .accordion-toggle::after {
+  opacity: 1;
+  color: var(--color-accent);
+}

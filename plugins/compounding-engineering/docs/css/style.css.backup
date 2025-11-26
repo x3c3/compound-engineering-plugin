@@ -2043,22 +2043,20 @@ section {
 /* ============================================
    Accordion / FAQ
    ============================================ */
+
 .accordion-container {
   display: flex;
   flex-direction: column;
   gap: var(--space-m);
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 .accordion-item {
   background: var(--color-surface);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-l);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .accordion-item::before {
@@ -2070,8 +2068,7 @@ section {
   width: 4px;
   background: linear-gradient(180deg, var(--color-accent), var(--color-accent-hover));
   opacity: 0;
-  transition: opacity 0.35s ease;
-  z-index: 2;
+  transition: opacity 0.3s ease;
 }
 
 .accordion-item[open]::before {
@@ -2080,271 +2077,22 @@ section {
 
 .accordion-item:hover {
   border-color: var(--color-accent);
-  box-shadow: 0 8px 24px rgba(129, 140, 248, 0.2);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(129, 140, 248, 0.15);
 }
 
 .accordion-item[open] {
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.08), var(--color-surface));
+  background: linear-gradient(135deg, var(--color-accent-lighter), var(--color-surface));
   border-color: var(--color-accent);
-  box-shadow: 0 12px 32px rgba(129, 140, 248, 0.25);
 }
 
 .accordion-toggle {
   display: flex;
   align-items: center;
-/* ============================================
-   Promo CTA Section - Final Polish
-   ============================================ */
-
-.promo-cta {
-  background: linear-gradient(135deg, var(--color-promo-start), var(--color-promo-end));
-  border-radius: var(--radius-xl);
-  padding: 96px var(--space-xxl);
-  margin-bottom: var(--space-xxl);
-  position: relative;
-  overflow: hidden;
-  box-shadow: 
-    0 20px 60px rgba(129, 140, 248, 0.5),
-    0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-.promo-cta::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 20px,
-      rgba(255, 255, 255, 0.04) 20px,
-      rgba(255, 255, 255, 0.04) 40px
-    );
-  pointer-events: none;
-}
-
-.promo-cta::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-  pointer-events: none;
-  animation: glow-pulse 6s ease-in-out infinite;
-}
-
-@keyframes glow-pulse {
-  0%, 100% { 
-    opacity: 0.4; 
-    transform: translate(-50%, -50%) scale(0.95); 
-  }
-  50% { 
-    opacity: 0.7; 
-    transform: translate(-50%, -50%) scale(1.05); 
-  }
-}
-
-.cta-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 22px;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50px;
-  color: white;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 28px;
-  position: relative;
-  z-index: 1;
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.cta-badge i {
-  font-size: 16px;
-  animation: bolt-flash 2.5s ease-in-out infinite;
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
-}
-
-@keyframes bolt-flash {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; transform: scale(1.15); }
-}
-
-.promo-cta h2 {
-  color: white;
-  font-size: 52px;
-  font-weight: 850;
-  line-height: 1.1;
-  margin-bottom: 28px;
-  position: relative;
-  z-index: 1;
-  text-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    0 4px 20px rgba(0, 0, 0, 0.15);
-  letter-spacing: -0.03em;
-}
-
-.cta-subheading {
-  color: rgba(255, 255, 255, 0.98);
-  font-size: 20px;
-  line-height: 1.65;
-  max-width: 720px;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-  z-index: 1;
-}
-
-.cta-subheading strong {
-  color: white;
-  font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.promo-cta .button {
-  position: relative;
-  z-index: 1;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.promo-cta .button.primary {
-  background: white;
-  color: var(--color-promo-end);
-  font-size: 19px;
-  font-weight: 700;
-  padding: 20px 42px;
-  box-shadow: 
-    0 8px 28px rgba(0, 0, 0, 0.3),
-    0 4px 12px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.promo-cta .button.primary:hover {
-  background: rgba(255, 255, 255, 0.98);
-  transform: translateY(-4px) scale(1.04);
-  box-shadow: 
-    0 16px 40px rgba(0, 0, 0, 0.4),
-    0 8px 16px rgba(0, 0, 0, 0.25);
-}
-
-.promo-cta .button.primary i {
-  font-size: 20px;
-  margin-right: 4px;
-}
-
-.button-arrow {
-  display: inline-block;
-  margin-left: 8px;
-  transition: transform 0.3s ease;
-  font-weight: 700;
-  font-size: 20px;
-}
-
-.promo-cta .button.primary:hover .button-arrow {
-  transform: translateX(4px);
-}
-
-.promo-cta .button.tertiary {
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  color: white;
-  font-size: 18px;
-  padding: 18px 36px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-}
-
-.promo-cta .button.tertiary:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.8);
-  transform: translateY(-2px);
-}
-
-.cta-trust {
-  margin-top: 32px;
-  margin-bottom: 0;
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  position: relative;
-  z-index: 1;
-}
-
-.cta-trust::before {
-  content: '✓';
-  display: inline-block;
-  margin-right: 8px;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 700;
-  font-size: 18px;
-}
-
-@media (max-width: 767px) {
-  .promo-cta {
-    padding: 64px var(--space-xl);
-  }
-  
-  .promo-cta h2 {
-    font-size: 38px;
-  }
-  
-  .cta-subheading {
-    font-size: 18px;
-  }
-  
-  .promo-cta .button.primary {
-    font-size: 17px;
-    padding: 18px 32px;
-  }
-  
-  .button-group {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .button-group .button {
-    width: 100%;
-  }
-}
-/* Add subtle numbers */
-.accordion-item:nth-child(1) .accordion-toggle::after { content: '01'; }
-.accordion-item:nth-child(2) .accordion-toggle::after { content: '02'; }
-.accordion-item:nth-child(3) .accordion-toggle::after { content: '03'; }
-.accordion-item:nth-child(4) .accordion-toggle::after { content: '04'; }
-.accordion-item:nth-child(5) .accordion-toggle::after { content: '05'; }
-
-.accordion-toggle::after {
-  position: absolute;
-  right: 70px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--color-text-tertiary);
-  opacity: 0.4;
-  font-family: var(--font-mono);
-  letter-spacing: 0.05em;
-  transition: all 0.3s ease;
-}
-
-.accordion-item:hover .accordion-toggle::after {
-  opacity: 0.7;
-  color: var(--color-accent);
-}
-
-.accordion-item[open] .accordion-toggle::after {
-  opacity: 0;
-}
-
+  justify-content: space-between;
+  padding: var(--space-xl);
+  cursor: pointer;
+  list-style: none;
+  gap: var(--space-m);
 /* ============================================
    Promo CTA Section
    ============================================ */
