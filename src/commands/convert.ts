@@ -5,6 +5,7 @@ import { loadClaudePlugin } from "../parsers/claude"
 import { targets } from "../targets"
 import type { PermissionMode } from "../converters/claude-to-opencode"
 import { ensureCodexAgentsFile } from "../utils/codex-agents"
+import { expandHome, resolveTargetHome } from "../utils/resolve-home"
 
 const permissionModes: PermissionMode[] = ["none", "broad", "from-commands"]
 
@@ -77,8 +78,8 @@ export default defineCommand({
 
     const plugin = await loadClaudePlugin(String(args.source))
     const outputRoot = resolveOutputRoot(args.output)
-    const codexHome = resolveCodexRoot(args.codexHome)
-    const piHome = resolvePiRoot(args.piHome)
+    const codexHome = resolveTargetHome(args.codexHome, path.join(os.homedir(), ".codex"))
+    const piHome = resolveTargetHome(args.piHome, path.join(os.homedir(), ".pi", "agent"))
 
     const options = {
       agentMode: String(args.agentMode) === "primary" ? "primary" : "subagent",
@@ -129,38 +130,6 @@ function parseExtraTargets(value: unknown): string[] {
     .split(",")
     .map((entry) => entry.trim())
     .filter(Boolean)
-}
-
-function resolveCodexHome(value: unknown): string | null {
-  if (!value) return null
-  const raw = String(value).trim()
-  if (!raw) return null
-  const expanded = expandHome(raw)
-  return path.resolve(expanded)
-}
-
-function resolveCodexRoot(value: unknown): string {
-  return resolveCodexHome(value) ?? path.join(os.homedir(), ".codex")
-}
-
-function resolvePiHome(value: unknown): string | null {
-  if (!value) return null
-  const raw = String(value).trim()
-  if (!raw) return null
-  const expanded = expandHome(raw)
-  return path.resolve(expanded)
-}
-
-function resolvePiRoot(value: unknown): string {
-  return resolvePiHome(value) ?? path.join(os.homedir(), ".pi", "agent")
-}
-
-function expandHome(value: string): string {
-  if (value === "~") return os.homedir()
-  if (value.startsWith(`~${path.sep}`)) {
-    return path.join(os.homedir(), value.slice(2))
-  }
-  return value
 }
 
 function resolveOutputRoot(value: unknown): string {

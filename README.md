@@ -49,7 +49,7 @@ All provider targets are experimental and may change as the formats evolve.
 
 ## Sync Personal Config
 
-Sync your personal Claude Code config (`~/.claude/`) to OpenCode, Codex, or Pi:
+Sync your personal Claude Code config (`~/.claude/`) to other AI coding tools:
 
 ```bash
 # Sync skills and MCP servers to OpenCode
@@ -60,6 +60,12 @@ bunx @every-env/compound-plugin sync --target codex
 
 # Sync to Pi
 bunx @every-env/compound-plugin sync --target pi
+
+# Sync to Droid (skills only)
+bunx @every-env/compound-plugin sync --target droid
+
+# Sync to Cursor (skills + MCP servers)
+bunx @every-env/compound-plugin sync --target cursor
 ```
 
 This syncs:

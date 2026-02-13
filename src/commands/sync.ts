@@ -5,9 +5,15 @@ import { loadClaudeHome } from "../parsers/claude-home"
 import { syncToOpenCode } from "../sync/opencode"
 import { syncToCodex } from "../sync/codex"
 import { syncToPi } from "../sync/pi"
+import { syncToDroid } from "../sync/droid"
+import { syncToCursor } from "../sync/cursor"
+import { expandHome } from "../utils/resolve-home"
 
-function isValidTarget(value: string): value is "opencode" | "codex" | "pi" {
-  return value === "opencode" || value === "codex" || value === "pi"
+const validTargets = ["opencode", "codex", "pi", "droid", "cursor"] as const
+type SyncTarget = (typeof validTargets)[number]
+
+function isValidTarget(value: string): value is SyncTarget {
+  return (validTargets as readonly string[]).includes(value)
 }
 
 /** Check if any MCP servers have env vars that might contain secrets */
@@ -24,16 +30,31 @@ function hasPotentialSecrets(mcpServers: Record<string, unknown>): boolean {
   return false
 }
 
+function resolveOutputRoot(target: SyncTarget): string {
+  switch (target) {
+    case "opencode":
+      return path.join(os.homedir(), ".config", "opencode")
+    case "codex":
+      return path.join(os.homedir(), ".codex")
+    case "pi":
+      return path.join(os.homedir(), ".pi", "agent")
+    case "droid":
+      return path.join(os.homedir(), ".factory")
+    case "cursor":
+      return path.join(process.cwd(), ".cursor")
+  }
+}
+
 export default defineCommand({
   meta: {
     name: "sync",
-    description: "Sync Claude Code config (~/.claude/) to OpenCode, Codex, or Pi",
+    description: "Sync Claude Code config (~/.claude/) to OpenCode, Codex, Pi, Droid, or Cursor",
   },
   args: {
     target: {
       type: "string",
       required: true,
-      description: "Target: opencode | codex | pi",
+      description: "Target: opencode | codex | pi | droid | cursor",
     },
     claudeHome: {
       type: "string",
@@ -43,7 +64,7 @@ export default defineCommand({
   },
   async run({ args }) {
     if (!isValidTarget(args.target)) {
-      throw new Error(`Unknown target: ${args.target}. Use 'opencode', 'codex', or 'pi'.`)
+      throw new Error(`Unknown target: ${args.target}. Use one of: ${validTargets.join(", ")}`)
     }
 
     const claudeHome = expandHome(args.claudeHome ?? path.join(os.homedir(), ".claude"))
@@ -61,29 +82,26 @@ export default defineCommand({
       `Syncing ${config.skills.length} skills, ${Object.keys(config.mcpServers).length} MCP servers...`,
     )
 
-    const outputRoot =
-      args.target === "opencode"
-        ? path.join(os.homedir(), ".config", "opencode")
-        : args.target === "codex"
-          ? path.join(os.homedir(), ".codex")
-          : path.join(os.homedir(), ".pi", "agent")
+    const outputRoot = resolveOutputRoot(args.target)
 
-    if (args.target === "opencode") {
-      await syncToOpenCode(config, outputRoot)
-    } else if (args.target === "codex") {
-      await syncToCodex(config, outputRoot)
-    } else {
-      await syncToPi(config, outputRoot)
+    switch (args.target) {
+      case "opencode":
+        await syncToOpenCode(config, outputRoot)
+        break
+      case "codex":
+        await syncToCodex(config, outputRoot)
+        break
+      case "pi":
+        await syncToPi(config, outputRoot)
+        break
+      case "droid":
+        await syncToDroid(config, outputRoot)
+        break
+      case "cursor":
+        await syncToCursor(config, outputRoot)
+        break
     }
 
     console.log(`✓ Synced to ${args.target}: ${outputRoot}`)
   },
 })
-
-function expandHome(value: string): string {
-  if (value === "~") return os.homedir()
-  if (value.startsWith(`~${path.sep}`)) {
-    return path.join(os.homedir(), value.slice(2))
-  }
-  return value
-}
