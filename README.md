@@ -12,9 +12,9 @@ A Claude Code plugin marketplace featuring the **Compound Engineering Plugin** �
 /plugin install compound-engineering
 ```
 
-## OpenCode, Codex, Droid & Cursor (experimental) Install
+## OpenCode, Codex, Droid, Cursor & Pi (experimental) Install
 
-This repo includes a Bun/TypeScript CLI that converts Claude Code plugins to OpenCode, Codex, Factory Droid, and Cursor.
+This repo includes a Bun/TypeScript CLI that converts Claude Code plugins to OpenCode, Codex, Factory Droid, Cursor, and Pi.
 
 ```bash
 # convert the compound-engineering plugin into OpenCode format
@@ -28,6 +28,9 @@ bunx @every-env/compound-plugin install compound-engineering --to droid
 
 # convert to Cursor format
 bunx @every-env/compound-plugin install compound-engineering --to cursor
+
+# convert to Pi format
+bunx @every-env/compound-plugin install compound-engineering --to pi
 ```
 
 Local dev:
@@ -40,12 +43,13 @@ OpenCode output is written to `~/.config/opencode` by default, with `opencode.js
 Codex output is written to `~/.codex/prompts` and `~/.codex/skills`, with each Claude command converted into both a prompt and a skill (the prompt instructs Codex to load the corresponding skill). Generated Codex skill descriptions are truncated to 1024 characters (Codex limit).
 Droid output is written to `~/.factory/` with commands, droids (agents), and skills. Claude tool names are mapped to Factory equivalents (`Bash` → `Execute`, `Write` → `Create`, etc.) and namespace prefixes are stripped from commands.
 Cursor output is written to `.cursor/` with rules (`.mdc`), commands, skills, and `mcp.json`. Agents become "Agent Requested" rules (`alwaysApply: false`) so Cursor's AI activates them on demand. Works with both the Cursor IDE and Cursor CLI (`cursor-agent`) — they share the same `.cursor/` config directory.
+Pi output is written to `~/.pi/agent/` by default with prompts, skills, extensions, and `compound-engineering/mcporter.json` for MCPorter interoperability.
 
 All provider targets are experimental and may change as the formats evolve.
 
 ## Sync Personal Config
 
-Sync your personal Claude Code config (`~/.claude/`) to OpenCode or Codex:
+Sync your personal Claude Code config (`~/.claude/`) to OpenCode, Codex, or Pi:
 
 ```bash
 # Sync skills and MCP servers to OpenCode
@@ -53,6 +57,9 @@ bunx @every-env/compound-plugin sync --target opencode
 
 # Sync to Codex
 bunx @every-env/compound-plugin sync --target codex
+
+# Sync to Pi
+bunx @every-env/compound-plugin sync --target pi
 ```
 
 This syncs:

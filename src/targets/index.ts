@@ -3,14 +3,17 @@ import type { OpenCodeBundle } from "../types/opencode"
 import type { CodexBundle } from "../types/codex"
 import type { DroidBundle } from "../types/droid"
 import type { CursorBundle } from "../types/cursor"
+import type { PiBundle } from "../types/pi"
 import { convertClaudeToOpenCode, type ClaudeToOpenCodeOptions } from "../converters/claude-to-opencode"
 import { convertClaudeToCodex } from "../converters/claude-to-codex"
 import { convertClaudeToDroid } from "../converters/claude-to-droid"
 import { convertClaudeToCursor } from "../converters/claude-to-cursor"
+import { convertClaudeToPi } from "../converters/claude-to-pi"
 import { writeOpenCodeBundle } from "./opencode"
 import { writeCodexBundle } from "./codex"
 import { writeDroidBundle } from "./droid"
 import { writeCursorBundle } from "./cursor"
+import { writePiBundle } from "./pi"
 
 export type TargetHandler<TBundle = unknown> = {
   name: string
@@ -43,5 +46,11 @@ export const targets: Record<string, TargetHandler> = {
     implemented: true,
     convert: convertClaudeToCursor as TargetHandler<CursorBundle>["convert"],
     write: writeCursorBundle as TargetHandler<CursorBundle>["write"],
+  },
+  pi: {
+    name: "pi",
+    implemented: true,
+    convert: convertClaudeToPi as TargetHandler<PiBundle>["convert"],
+    write: writePiBundle as TargetHandler<PiBundle>["write"],
   },
 }

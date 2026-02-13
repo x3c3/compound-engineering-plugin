@@ -24,7 +24,7 @@ export default defineCommand({
     to: {
       type: "string",
       default: "opencode",
-      description: "Target format (opencode | codex | droid | cursor)",
+      description: "Target format (opencode | codex | droid | cursor | pi)",
     },
     output: {
       type: "string",
@@ -35,6 +35,11 @@ export default defineCommand({
       type: "string",
       alias: "codex-home",
       description: "Write Codex output to this .codex root (ex: ~/.codex)",
+    },
+    piHome: {
+      type: "string",
+      alias: "pi-home",
+      description: "Write Pi output to this Pi root (ex: ~/.pi/agent or ./.pi)",
     },
     also: {
       type: "string",
@@ -77,6 +82,7 @@ export default defineCommand({
       const plugin = await loadClaudePlugin(resolvedPlugin.path)
       const outputRoot = resolveOutputRoot(args.output)
       const codexHome = resolveCodexRoot(args.codexHome)
+      const piHome = resolvePiRoot(args.piHome)
 
       const options = {
         agentMode: String(args.agentMode) === "primary" ? "primary" : "subagent",
@@ -89,7 +95,7 @@ export default defineCommand({
         throw new Error(`Target ${targetName} did not return a bundle.`)
       }
       const hasExplicitOutput = Boolean(args.output && String(args.output).trim())
-      const primaryOutputRoot = resolveTargetOutputRoot(targetName, outputRoot, codexHome, hasExplicitOutput)
+      const primaryOutputRoot = resolveTargetOutputRoot(targetName, outputRoot, codexHome, piHome, hasExplicitOutput)
       await target.write(primaryOutputRoot, bundle)
       console.log(`Installed ${plugin.manifest.name} to ${primaryOutputRoot}`)
 
@@ -110,7 +116,7 @@ export default defineCommand({
           console.warn(`Skipping ${extra}: no output returned.`)
           continue
         }
-        const extraRoot = resolveTargetOutputRoot(extra, path.join(outputRoot, extra), codexHome, hasExplicitOutput)
+        const extraRoot = resolveTargetOutputRoot(extra, path.join(outputRoot, extra), codexHome, piHome, hasExplicitOutput)
         await handler.write(extraRoot, extraBundle)
         console.log(`Installed ${plugin.manifest.name} to ${extraRoot}`)
       }
@@ -164,6 +170,18 @@ function resolveCodexRoot(value: unknown): string {
   return resolveCodexHome(value) ?? path.join(os.homedir(), ".codex")
 }
 
+function resolvePiHome(value: unknown): string | null {
+  if (!value) return null
+  const raw = String(value).trim()
+  if (!raw) return null
+  const expanded = expandHome(raw)
+  return path.resolve(expanded)
+}
+
+function resolvePiRoot(value: unknown): string {
+  return resolvePiHome(value) ?? path.join(os.homedir(), ".pi", "agent")
+}
+
 function expandHome(value: string): string {
   if (value === "~") return os.homedir()
   if (value.startsWith(`~${path.sep}`)) {
@@ -182,8 +200,15 @@ function resolveOutputRoot(value: unknown): string {
   return path.join(os.homedir(), ".config", "opencode")
 }
 
-function resolveTargetOutputRoot(targetName: string, outputRoot: string, codexHome: string, hasExplicitOutput: boolean): string {
+function resolveTargetOutputRoot(
+  targetName: string,
+  outputRoot: string,
+  codexHome: string,
+  piHome: string,
+  hasExplicitOutput: boolean,
+): string {
   if (targetName === "codex") return codexHome
+  if (targetName === "pi") return piHome
   if (targetName === "droid") return path.join(os.homedir(), ".factory")
   if (targetName === "cursor") {
     const base = hasExplicitOutput ? outputRoot : process.cwd()

@@ -350,4 +350,80 @@ describe("CLI", () => {
     expect(await exists(path.join(codexRoot, "skills", "skill-one", "SKILL.md"))).toBe(true)
     expect(await exists(path.join(codexRoot, "AGENTS.md"))).toBe(true)
   })
+
+  test("convert supports --pi-home for pi output", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-pi-home-"))
+    const piRoot = path.join(tempRoot, ".pi")
+    const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")
+
+    const proc = Bun.spawn([
+      "bun",
+      "run",
+      "src/index.ts",
+      "convert",
+      fixtureRoot,
+      "--to",
+      "pi",
+      "--pi-home",
+      piRoot,
+    ], {
+      cwd: path.join(import.meta.dir, ".."),
+      stdout: "pipe",
+      stderr: "pipe",
+    })
+
+    const exitCode = await proc.exited
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+
+    if (exitCode !== 0) {
+      throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
+    }
+
+    expect(stdout).toContain("Converted compound-engineering")
+    expect(stdout).toContain(piRoot)
+    expect(await exists(path.join(piRoot, "prompts", "workflows-review.md"))).toBe(true)
+    expect(await exists(path.join(piRoot, "skills", "repo-research-analyst", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(piRoot, "extensions", "compound-engineering-compat.ts"))).toBe(true)
+    expect(await exists(path.join(piRoot, "compound-engineering", "mcporter.json"))).toBe(true)
+  })
+
+  test("install supports --also with pi output", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-also-pi-"))
+    const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")
+    const piRoot = path.join(tempRoot, ".pi")
+
+    const proc = Bun.spawn([
+      "bun",
+      "run",
+      "src/index.ts",
+      "install",
+      fixtureRoot,
+      "--to",
+      "opencode",
+      "--also",
+      "pi",
+      "--pi-home",
+      piRoot,
+      "--output",
+      tempRoot,
+    ], {
+      cwd: path.join(import.meta.dir, ".."),
+      stdout: "pipe",
+      stderr: "pipe",
+    })
+
+    const exitCode = await proc.exited
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+
+    if (exitCode !== 0) {
+      throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
+    }
+
+    expect(stdout).toContain("Installed compound-engineering")
+    expect(stdout).toContain(piRoot)
+    expect(await exists(path.join(piRoot, "prompts", "workflows-review.md"))).toBe(true)
+    expect(await exists(path.join(piRoot, "extensions", "compound-engineering-compat.ts"))).toBe(true)
+  })
 })
