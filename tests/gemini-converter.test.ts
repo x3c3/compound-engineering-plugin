@@ -267,6 +267,25 @@ describe("convertClaudeToGemini", () => {
     expect(bundle.commands).toHaveLength(0)
   })
 
+  test("agent name colliding with skill name gets deduplicated", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      skills: [{ name: "security-reviewer", description: "Existing skill", sourceDir: "/tmp/skill", skillPath: "/tmp/skill/SKILL.md" }],
+      agents: [{ name: "Security Reviewer", description: "Agent version", body: "Body.", sourcePath: "/tmp/agents/sr.md" }],
+      commands: [],
+    }
+
+    const bundle = convertClaudeToGemini(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    // Agent should be deduplicated since skill already has "security-reviewer"
+    expect(bundle.generatedSkills[0].name).toBe("security-reviewer-2")
+    expect(bundle.skillDirs[0].name).toBe("security-reviewer")
+  })
+
   test("hooks present emits console.warn", () => {
     const warnings: string[] = []
     const originalWarn = console.warn
@@ -338,5 +357,17 @@ describe("toToml", () => {
   test("escapes quotes in description", () => {
     const result = toToml('Say "hello"', "Prompt")
     expect(result).toContain('description = "Say \\"hello\\""')
+  })
+
+  test("escapes triple quotes in prompt", () => {
+    const result = toToml("A command", 'Content with """ inside it')
+    // Should not contain an unescaped """ that would close the TOML multi-line string prematurely
+    // The prompt section should have the escaped version
+    expect(result).toContain('description = "A command"')
+    expect(result).toContain('prompt = """')
+    // The inner """ should be escaped
+    expect(result).not.toMatch(/""".*""".*"""/s) // Should not have 3 separate triple-quote sequences (open, content, close would make 3)
+    // Verify it contains the escaped form
+    expect(result).toContain('\\"\\"\\"')
   })
 })

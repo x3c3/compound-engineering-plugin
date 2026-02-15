@@ -1,6 +1,6 @@
 import { formatFrontmatter } from "../utils/frontmatter"
 import type { ClaudeAgent, ClaudeCommand, ClaudeMcpServer, ClaudePlugin } from "../types/claude"
-import type { GeminiBundle, GeminiCommand, GeminiSkill } from "../types/gemini"
+import type { GeminiBundle, GeminiCommand, GeminiMcpServer, GeminiSkill } from "../types/gemini"
 import type { ClaudeToOpenCodeOptions } from "./claude-to-opencode"
 
 export type ClaudeToGeminiOptions = ClaudeToOpenCodeOptions
@@ -109,12 +109,12 @@ export function transformContentForGemini(body: string): string {
 
 function convertMcpServers(
   servers?: Record<string, ClaudeMcpServer>,
-): GeminiBundle["mcpServers"] | undefined {
+): Record<string, GeminiMcpServer> | undefined {
   if (!servers || Object.keys(servers).length === 0) return undefined
 
-  const result: NonNullable<GeminiBundle["mcpServers"]> = {}
+  const result: Record<string, GeminiMcpServer> = {}
   for (const [name, server] of Object.entries(servers)) {
-    const entry: NonNullable<GeminiBundle["mcpServers"]>[string] = {}
+    const entry: GeminiMcpServer = {}
     if (server.command) {
       entry.command = server.command
       if (server.args && server.args.length > 0) entry.args = server.args

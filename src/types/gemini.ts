@@ -13,15 +13,17 @@ export type GeminiCommand = {
   content: string // Full TOML content
 }
 
+export type GeminiMcpServer = {
+  command?: string
+  args?: string[]
+  env?: Record<string, string>
+  url?: string
+  headers?: Record<string, string>
+}
+
 export type GeminiBundle = {
   generatedSkills: GeminiSkill[] // From agents
   skillDirs: GeminiSkillDir[] // From skills (pass-through)
   commands: GeminiCommand[]
-  mcpServers?: Record<string, {
-    command?: string
-    args?: string[]
-    env?: Record<string, string>
-    url?: string
-    headers?: Record<string, string>
-  }>
+  mcpServers?: Record<string, GeminiMcpServer>
 }

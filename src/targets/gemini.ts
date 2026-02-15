@@ -37,11 +37,14 @@ export async function writeGeminiBundle(outputRoot: string, bundle: GeminiBundle
       try {
         existingSettings = await readJson<Record<string, unknown>>(settingsPath)
       } catch {
-        // If existing file is invalid JSON, start fresh
+        console.warn("Warning: existing settings.json could not be parsed and will be replaced.")
       }
     }
 
-    const merged = { ...existingSettings, mcpServers: bundle.mcpServers }
+    const existingMcp = (existingSettings.mcpServers && typeof existingSettings.mcpServers === "object")
+      ? existingSettings.mcpServers as Record<string, unknown>
+      : {}
+    const merged = { ...existingSettings, mcpServers: { ...existingMcp, ...bundle.mcpServers } }
     await writeJson(settingsPath, merged)
   }
 }

@@ -173,7 +173,9 @@ describe("writeGeminiBundle", () => {
     const content = JSON.parse(await fs.readFile(settingsPath, "utf8"))
     // Should preserve existing model key
     expect(content.model).toBe("gemini-2.5-pro")
-    // mcpServers should be replaced (not merged) with new content
+    // Should preserve existing MCP server
+    expect(content.mcpServers.old.command).toBe("old-cmd")
+    // Should add new MCP server
     expect(content.mcpServers.newServer.command).toBe("new-cmd")
   })
 })
