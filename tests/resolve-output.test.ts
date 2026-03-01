@@ -90,4 +90,42 @@ describe("resolveTargetOutputRoot", () => {
     const result = resolveTargetOutputRoot({ ...baseOptions, targetName: "opencode" })
     expect(result).toBe("/tmp/output")
   })
+
+  test("openclaw uses openclawHome + pluginName", () => {
+    const result = resolveTargetOutputRoot({
+      ...baseOptions,
+      targetName: "openclaw",
+      openclawHome: "/custom/openclaw/extensions",
+      pluginName: "my-plugin",
+    })
+    expect(result).toBe("/custom/openclaw/extensions/my-plugin")
+  })
+
+  test("openclaw falls back to default home when not provided", () => {
+    const result = resolveTargetOutputRoot({
+      ...baseOptions,
+      targetName: "openclaw",
+      pluginName: "my-plugin",
+    })
+    expect(result).toBe(path.join(os.homedir(), ".openclaw", "extensions", "my-plugin"))
+  })
+
+  test("qwen uses qwenHome + pluginName", () => {
+    const result = resolveTargetOutputRoot({
+      ...baseOptions,
+      targetName: "qwen",
+      qwenHome: "/custom/qwen/extensions",
+      pluginName: "my-plugin",
+    })
+    expect(result).toBe("/custom/qwen/extensions/my-plugin")
+  })
+
+  test("qwen falls back to default home when not provided", () => {
+    const result = resolveTargetOutputRoot({
+      ...baseOptions,
+      targetName: "qwen",
+      pluginName: "my-plugin",
+    })
+    expect(result).toBe(path.join(os.homedir(), ".qwen", "extensions", "my-plugin"))
+  })
 })
